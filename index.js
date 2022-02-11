@@ -4,25 +4,40 @@
 const fs = require("fs");
 csv = fs.readFileSync("CSV_file.csv")
 
-let xmlFile = fs.readFileSync("Translations.xml");
+const xmlFile = fs.readFileSync("Translations.xml");
+
+const xmlContent = xmlFile.toString();
+
+const reg = /<key [^>]+>(\n|[^\n](?!<\/key>))+/gm;
+
+const matchedKeys = xmlContent.match(reg);
 
 //REMOVE:
-console.log('xmlFile', xmlFile);
+console.log('matchedKeys', matchedKeys[0].toString());
+
+
+let existingTranslations = matchedKeys.reduce((acc, curr) => {
+    let translation = {
+        Key: /name=\"([^\"]+)/gm.exec(curr)[1],
+        Default: /DefaultValue=\"([^\"]+)/gm.exec(curr)[1]
+    };
+
+    curr = curr.replace(/\r|\n/g, '');
+    let allTranslationsStart = curr.match(/<translation[^>]+>/g);
+
+    acc.push(translation);
+    return acc;
+}, [])
+
+//REMOVE:
+// console.log('ex', existingTranslations[0]);
+
 
 
 // Convert the data to String and
 // split it in an array
 var array = csv.toString().split("\r\n");
 
-// All the rows of the CSV will be
-// converted to JSON objects which
-// will be added to result in an array
-let result = [];
-
-// The array[0] contains all the
-// header columns so we store them
-// in headers array
-// and remove invisible char's
 const headers = array[0].split(";").map((el) => el.replace(/^\uFEFF/gm, ""));
 //remove headers and empty rows
 array.shift();
@@ -42,9 +57,11 @@ array = array.reduce((accu, current) => {
 
 }, []);
 
-result = array;
+let resultArray = `<?xml version="1.0" encoding="utf-8"?>
+<translations>
+`
 
-const resultArray = array.reduce((accu, current) => {
+resultArray += array.reduce((accu, current) => {
     const keys = Object.keys(current).filter(el => el != 'Key' && el != 'Default');
 
     const insertedXML = `<key name="${current.Key}" DefaultValue="${current.Default}">
@@ -54,12 +71,9 @@ const resultArray = array.reduce((accu, current) => {
     }, '')}
     </key>
   `;
-
     return accu += insertedXML;
-
 }, '');
 
+resultArray += '</translations>';
 
-let json = JSON.stringify(result);
-fs.writeFileSync('output.json', json);
 fs.writeFileSync('newTranslations.xml', resultArray)
