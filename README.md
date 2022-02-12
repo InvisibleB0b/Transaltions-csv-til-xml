@@ -11,7 +11,15 @@ You need the following.
 | -----------------| ---------------| --------------| ------------- |
 | `CartPayment.Alt`| `Kortbetaling` | `CartPayment` | `Kortbetaling`|
 ...
-### 4. (Optional) An XML file named Translations.xml ( the current translations file from Dynamicweb administration ).
+### or as a raw file look like this
+```
+Key;Default;en-GB;da-DK
+1;1;one;en
+2;2;two;to
+3;3;three;tre
+4;4;four;fire
+```
+### 4. (Optional) An XML file named Translations.xml in the same directory as the index.js file ( the current translations file from Dynamicweb administration ).
 ### 5. Run the following command in the console, from the repo's directory.
 
 ```
