@@ -1,6 +1,6 @@
 # Transaltions-csv-til-xml
 
-in order to run this Dynamicweb translations adder.
+in order to run this Dynamicweb translations adder. It will also update any given translations in the given xml file
 
 You need the following.
 
