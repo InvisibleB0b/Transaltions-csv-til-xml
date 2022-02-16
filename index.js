@@ -52,7 +52,7 @@ let existingTranslations = matchedKeys?.reduce((acc, curr) => {
 }, [])
 
 
-var array = csv.toString().split("\r\n");
+var array = csv.toString().replace(/\"/gm, '').split("\r\n");
 
 console.log('Generating translations from csv file');
 const headers = array[0].split(";").map((el) => el.replace(/^\uFEFF/gm, ""));
