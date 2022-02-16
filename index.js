@@ -93,16 +93,14 @@ let resultArray = `<?xml version="1.0" encoding="utf-8"?>
 <translations>
 `
 console.log('Converting to xml');
-resultArray += combinedTranslations.reduce((accu, current) => {
+resultArray += combinedTranslations.reduce((accu, current, translationsIndex, translationsArr) => {
     const keys = Object.keys(current).filter(el => el != 'Key' && el != 'Default');
 
     const insertedXML = `<key name="${current.Key}" DefaultValue="${current.Default}">
-        ${keys.reduce((acc, ke) => {
-        return acc += `<translation culture="${ke}"><![CDATA[${current[ke]}]]></translation>
-        `;
+        ${keys.reduce((acc, ke, keysIndex, keysArr) => {
+        return acc += `<translation culture="${ke}"><![CDATA[${current[ke]}]]></translation>${keysIndex == keysArr.length - 1 ? "" : "\n"}`;
     }, '')}
-    </key>
-  `;
+    </key>${translationsIndex == translationsArr.length - 1 ? "" : "\n"}`;
     return accu += insertedXML;
 }, '');
 
