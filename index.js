@@ -25,7 +25,7 @@ console.log('Generating translations from existing ones');
 let existingTranslations = matchedKeys?.reduce((acc, curr) => {
     let translation = {
         Key: /name=\"([^\"]+)/gm.exec(curr)[1],
-        Default: /DefaultValue=\"([^\"]+)/gm.exec(curr)[1]
+        Default: (/DefaultValue=\"([^\"]+)/gm.exec(curr) != null ? /DefaultValue=\"([^\"]+)/gm.exec(curr)[1] : /name=\"([^\"]+)/gm.exec(curr)[1])
     };
 
     curr = curr.replace(/\r|\n/g, '');
