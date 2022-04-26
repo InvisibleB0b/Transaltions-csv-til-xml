@@ -17,7 +17,7 @@ const reg = /<key [^>]+>(\n|[^\n](?!<\/key>))+/gm;
 console.log('Reading all keys...');
 const matchedKeys = xmlContent.match(reg);
 
-console.log('Generating translations from existing ones');
+console.log('Generating translations objects from existing file');
 const existingTranslations = matchedKeys?.reduce((acc, curr) => {
     let translation = {
         Key: /name=\"([^\"]+)/gm.exec(curr)[1],
@@ -58,7 +58,7 @@ const languages = existingTranslations.reduce((acc, curr) => {
     return acc;
 }, []);
 
-console.log('languages', languages);
+console.log('Headers:\n', languages);
 
 const mappedTranslations = existingTranslations.map((translation) => {
 
@@ -77,4 +77,5 @@ console.log('Saveing as csv file');
 fs.writeFileSync('extractedTranslations.csv', '\uFEFF' + csvString, { encoding: "UTF-8" });
 
 console.log("---------DONE---------");
-console.log(`${mappedTranslations.length} translations extracted \nwith ${languages.length} languages`);
+console.log(`${mappedTranslations.length} translations extracted \nWith ${languages.length} headers`);
+console.log("---------DONE---------");
