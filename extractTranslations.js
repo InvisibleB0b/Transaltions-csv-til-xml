@@ -19,31 +19,36 @@ const matchedKeys = xmlContent.match(reg);
 
 console.log('Generating translations objects from existing file');
 const existingTranslations = matchedKeys?.reduce((acc, curr) => {
-    let translation = {
-        Key: /name=\"([^\"]+)/gm.exec(curr)[1],
-        Default: (/DefaultValue=\"([^\"]+)/gm.exec(curr) != null ? /DefaultValue=\"([^\"]+)/gm.exec(curr)[1] : /name=\"([^\"]+)/gm.exec(curr)[1])
-    };
+    try {
 
-    curr = curr.replace(/\r|\n/g, '');
-    let allTranslationsStart = curr.match(/<translation[^>]+>/g);
+        let translation = {
+            Key: /name=\"([^\"]+)/gm.exec(curr)[1],
+            Default: (/DefaultValue=\"([^\"]+)/gm.exec(curr) != null ? /DefaultValue=\"([^\"]+)/gm.exec(curr)[1] : /name=\"([^\"]+)/gm.exec(curr)[1])
+        };
 
-    allTranslationsStart.forEach((current) => {
+        curr = curr.replace(/\r|\n/g, '');
+        let allTranslationsStart = curr.match(/<translation[^>]+>/g);
 
-        const translationIndex = curr.indexOf(current);
+        allTranslationsStart.forEach((current) => {
 
-        const endTranslationIndex = curr.indexOf('</translation>', translationIndex);
+            const translationIndex = curr.indexOf(current);
 
-        const entireTranslationTag = curr.substring(translationIndex, endTranslationIndex + 14);
+            const endTranslationIndex = curr.indexOf('</translation>', translationIndex);
 
-        const theCulture = /culture=\"([^\"]+)/gm.exec(current)[1];
+            const entireTranslationTag = curr.substring(translationIndex, endTranslationIndex + 14);
 
-        const theTranslatedValue = /\<\!\[CDATA\[([^\]]*)\]\]>/gm.exec(entireTranslationTag);
+            const theCulture = /culture=\"([^\"]+)/gm.exec(current)[1];
 
-        translation[theCulture] = theTranslatedValue != null ? theTranslatedValue[1] : "";
+            const theTranslatedValue = /\<\!\[CDATA\[([^\]]*)\]\]>/gm.exec(entireTranslationTag);
 
-    });
+            translation[theCulture] = theTranslatedValue != null ? theTranslatedValue[1] : "";
 
-    acc.push(translation);
+        });
+
+        acc.push(translation);
+    } catch (error) {
+        console.log("WARNING ----", error.message)
+    }
     return acc;
 }, []);
 
@@ -65,7 +70,7 @@ const mappedTranslations = existingTranslations.map((translation) => {
     let csvLine = '';
 
     languages.forEach((ele, index, arr) => {
-        csvLine += `${translation[ele].toString("utf8") ?? ''}${(index != arr.length - 1 ? ';' : '')}`;
+        csvLine += `${translation[ele]?.toString("utf8") ?? ''}${(index != arr.length - 1 ? ';' : '')}`;
     });
 
     return csvLine;
